@@ -5,7 +5,7 @@
     "type": "commonjs",
     "main": "dist/index.js",
     "scripts": {
-        "build": "npx tsc",
+        "build": "tsc",
         "start": "node dist/index.js",
         "dev": "concurrently \"npx tsc --watch \" \"nodemon -q dist/index.js \"",
         "seed": "npx ts-node src/seed.ts"
