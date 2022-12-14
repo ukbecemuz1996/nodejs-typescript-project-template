@@ -7,7 +7,7 @@ i18next
     .use(middleware.LanguageDetector)
     .use(Backend)
     .init({
-        debug: true,
+        debug: false,
         detection: {
             order: ['querystring'],
             lookupQuerystring: 'lng',

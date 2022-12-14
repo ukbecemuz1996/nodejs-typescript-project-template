@@ -8,6 +8,7 @@ import Middleware from '../../../middlewares/Middleware';
 import Authentication from '../../../services/Authentication';
 import Password from '../../../services/Password';
 import ResponseBuilder from '../../../services/Response';
+import Utils from '../../../services/Utils';
 import { ResponseStatus, TSuccessResponse } from '../../../types/response';
 import { LoginRequest, SignupRequest } from './auth.request';
 import { TLoginResponse } from './auth.response';
@@ -17,9 +18,9 @@ import AuthService from './auth.service';
 class AuthController extends BaseController {
     private authService: AuthService;
     protected paths = {
-        login: '/login',
-        signup: '/signup',
-        dashboard: '/dashboard',
+        login: Utils.apiPath('/login', ['auth']),
+        signup: Utils.apiPath('/signup', ['auth']),
+        dashboard: Utils.apiPath('/dashboard', ['auth']),
     };
 
     constructor() {
