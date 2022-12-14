@@ -65,8 +65,6 @@ class AuthService {
             where: userWhere,
         });
 
-        console.log(user);
-
         return user;
     }
 

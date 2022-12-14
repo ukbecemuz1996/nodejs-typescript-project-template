@@ -1,4 +1,4 @@
-import { request, Request } from 'express';
+import { Request } from 'express';
 
 export type TLoginRequestBody = {
     email: string;

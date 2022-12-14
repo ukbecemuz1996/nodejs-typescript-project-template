@@ -1,15 +1,11 @@
-import { Prisma, prisma, PrismaClient, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Request, Response } from 'express';
-import passport from 'passport';
 
 import BaseController from '../../../absrtacts/BaseController';
-import Config from '../../../Config';
 import Middleware from '../../../middlewares/Middleware';
-import Authentication from '../../../services/Authentication';
-import Password from '../../../services/Password';
 import ResponseBuilder from '../../../services/Response';
 import Utils from '../../../services/Utils';
-import { ResponseStatus, TSuccessResponse } from '../../../types/response';
+import { ResponseStatus } from '../../../types/response';
 import { LoginRequest, SignupRequest } from './auth.request';
 import { TLoginResponse } from './auth.response';
 import AuthSchema from './auth.schema';
@@ -17,6 +13,7 @@ import AuthService from './auth.service';
 
 class AuthController extends BaseController {
     private authService: AuthService;
+    private authSchema: AuthSchema;
     protected paths = {
         login: Utils.apiPath('/login', ['auth']),
         signup: Utils.apiPath('/signup', ['auth']),
@@ -26,6 +23,7 @@ class AuthController extends BaseController {
     constructor() {
         super();
         this.authService = new AuthService();
+        this.authSchema = new AuthSchema();
         this.initializeRouter();
     }
 
@@ -33,13 +31,13 @@ class AuthController extends BaseController {
         // login post
         this.router.post(
             this.paths.login,
-            Middleware.bodyValidator(AuthSchema.login()),
+            Middleware.bodyValidator(this.authSchema.login()),
             this.login.bind(this)
         );
         // signup post
         this.router.post(
             this.paths.signup,
-            Middleware.bodyValidator(AuthSchema.signup()),
+            Middleware.bodyValidator(this.authSchema.signup()),
             this.signup.bind(this)
         );
         this.router.get(

@@ -1,14 +1,14 @@
 import Joi from 'joi';
 
 class AuthSchema {
-    public static login(): Joi.ObjectSchema {
+    public login(): Joi.ObjectSchema {
         return Joi.object({
             email: Joi.string().max(20).required(),
             password: Joi.string().min(6).max(20).required(),
         });
     }
 
-    public static signup() {
+    public signup() {
         return Joi.object({
             email: Joi.string().email().required(),
             first_name: Joi.string().required(),

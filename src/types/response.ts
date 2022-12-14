@@ -1,5 +1,3 @@
-import { User } from "@prisma/client";
-
 export enum ResponseStatus {
     VALIDATION = 400,
     NON_AUTHORIZED = 401,

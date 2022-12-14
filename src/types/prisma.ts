@@ -1,4 +1,4 @@
-import { Prisma, User, UserToRole } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { JwtPayload } from 'jsonwebtoken';
 
 const userWithRoles = Prisma.validator<Prisma.UserArgs>()({

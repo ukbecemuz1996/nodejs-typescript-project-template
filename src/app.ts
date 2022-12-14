@@ -1,8 +1,8 @@
-import express, { Application, Express, Request, Response } from 'express';
+import express, { Application } from 'express';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import passport from 'passport';
 import BaseController from './absrtacts/BaseController';
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import Middleware from './middlewares/Middleware';
 import I18nextMiddleware from 'i18next-http-middleware';
 import i18next from './i18n';

@@ -12,6 +12,8 @@ class Middleware {
     public static errorHandler() {
         return (err: any, req: Request, res: Response, next: NextFunction) => {
             if (err) {
+                console.log(err.stack);
+
                 return new ResponseBuilder(res)
                     .statusCode(ResponseStatus.SERVER_ERROR)
                     .error(err.message)
@@ -20,11 +22,14 @@ class Middleware {
         };
     }
     public static bodyValidator(schema: Joi.AnySchema) {
-        return (err: any, req: Request, res: Response, next: NextFunction) => {
-            console.log(err);
-
+        return (req: Request, res: Response, next: NextFunction) => {
             const { body } = req;
             const { error } = schema.validate(body);
+
+            console.log({
+                body,
+                error,
+            });
 
             if (error) {
                 return new ResponseBuilder(res)
@@ -73,7 +78,6 @@ class Middleware {
                 // check if given roles existed in current user roles using AuthService
                 const authService = new AuthService();
                 const found = await authService.userhaveRoles(user.id, roles);
-
 
                 // if current user doesn`t have given roles retur error
                 if (!found) {
