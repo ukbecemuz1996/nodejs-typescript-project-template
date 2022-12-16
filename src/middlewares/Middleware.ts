@@ -8,6 +8,7 @@ import Authentication from '../services/Authentication';
 import { TPayloadType } from '../types/prisma';
 import AuthService from '../api/v1/auth/auth.service';
 import RedisClient from '../services/Redis';
+import { User } from '@prisma/client';
 
 class Middleware {
     public static errorHandler() {
@@ -119,7 +120,7 @@ class Middleware {
             try {
                 // verify token and return payload of type (User & JwtPayload)
 
-                const user = <TPayloadType>(
+                const user = <User>(
                     jwt.verify(token, process.env.JWT_SECRET_KEY || '')
                 );
 
@@ -132,6 +133,7 @@ class Middleware {
                 }
 
                 res.locals.user = user;
+                res.locals.token = token;
 
                 return next();
             } catch (error: any) {

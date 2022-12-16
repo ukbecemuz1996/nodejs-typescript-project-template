@@ -17,6 +17,7 @@ class AuthController extends BaseController {
     private authService: AuthService;
     private authSchema: AuthSchema;
     protected paths = {
+        token: Utils.apiPath('/token', ['auth']),
         login: Utils.apiPath('/login', ['auth']),
         signup: Utils.apiPath('/signup', ['auth']),
         logout: Utils.apiPath('/logout', ['auth']),
@@ -44,11 +45,18 @@ class AuthController extends BaseController {
             this.signup.bind(this)
         );
 
-        // signup post
+        // logout post
         this.router.post(
             this.paths.logout,
             Middleware.isAuthenticated(),
             this.logout.bind(this)
+        );
+
+        // token post
+        this.router.post(
+            this.paths.token,
+            Middleware.isAuthenticated(),
+            this.tokenCheck.bind(this)
         );
 
         this.router.get(
@@ -142,6 +150,22 @@ class AuthController extends BaseController {
         return new ResponseBuilder<Object>(response)
             .message('See you again')
             .object({})
+            .done();
+    }
+
+    private async tokenCheck(request: Request, response: Response) {
+        let user = response.locals.user;
+        let token = response.locals.token;
+
+        delete user.iat;
+        delete user.exp;
+
+        return new ResponseBuilder<Object>(response)
+            .message('Your token is valid')
+            .object({
+                ...user,
+                token,
+            })
             .done();
     }
 }
