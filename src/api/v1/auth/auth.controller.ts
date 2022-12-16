@@ -1,8 +1,10 @@
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
-
+import { ObjectBindingOrAssignmentElement } from 'typescript';
 import BaseController from '../../../absrtacts/BaseController';
 import Middleware from '../../../middlewares/Middleware';
+import Authentication from '../../../services/Authentication';
+import RedisClient from '../../../services/Redis';
 import ResponseBuilder from '../../../services/Response';
 import Utils from '../../../services/Utils';
 import { ResponseStatus } from '../../../types/response';
@@ -17,6 +19,7 @@ class AuthController extends BaseController {
     protected paths = {
         login: Utils.apiPath('/login', ['auth']),
         signup: Utils.apiPath('/signup', ['auth']),
+        logout: Utils.apiPath('/logout', ['auth']),
         dashboard: Utils.apiPath('/dashboard', ['auth']),
     };
 
@@ -40,9 +43,17 @@ class AuthController extends BaseController {
             Middleware.bodyValidator(this.authSchema.signup()),
             this.signup.bind(this)
         );
+
+        // signup post
+        this.router.post(
+            this.paths.logout,
+            Middleware.isAuthenticated(),
+            this.logout.bind(this)
+        );
+
         this.router.get(
             this.paths.dashboard,
-            Middleware.hasRoles(['user']),
+            Middleware.isAuthenticated(),
             this.dashboard
         );
     }
@@ -71,7 +82,6 @@ class AuthController extends BaseController {
 
     private async signup(request: SignupRequest, response: Response) {
         const { email, username } = request.body;
-
         const user = await this.authService.checkEmailAndUsername(
             email,
             username
@@ -104,7 +114,35 @@ class AuthController extends BaseController {
     }
 
     private dashboard(request: Request, response: Response) {
+        console.log(response.locals.user);
+
         response.send('Dashboard Route');
+    }
+
+    private async logout(request: Request, response: Response) {
+        const authorization = request.get('authorization');
+        const token =
+            Authentication.extractTokenFromAuthorization(authorization);
+        if (!token) {
+            return new ResponseBuilder(response)
+                .statusCode(ResponseStatus.NON_AUTHORIZED)
+                .error('You can`t logout please provide your token')
+                .done();
+        }
+
+        const client = RedisClient.getInstance();
+        if (!client.isOpen) await client.connect();
+        const jwtBlacklist = await client.json.get('jwt-blacklist');
+        if (jwtBlacklist) {
+            await client.json.arrAppend('jwt-blacklist', '.', { token });
+        } else {
+            await client.json.set('jwt-blacklist', '.', [{ token }]);
+        }
+
+        return new ResponseBuilder<Object>(response)
+            .message('See you again')
+            .object({})
+            .done();
     }
 }
 

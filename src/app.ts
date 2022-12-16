@@ -6,6 +6,7 @@ import { PrismaClient } from '@prisma/client';
 import Middleware from './middlewares/Middleware';
 import I18nextMiddleware from 'i18next-http-middleware';
 import i18next from './i18n';
+import RedisClient from './services/Redis';
 
 class App {
     private app: Application = express();
@@ -53,8 +54,9 @@ class App {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(Middleware.errorHandler());
-        this.app.use(I18nextMiddleware.handle(i18next))
-        this.initPassport();
+        this.app.use(Middleware.checkJWTBlacklist());
+        this.app.use(I18nextMiddleware.handle(i18next));
+        // this.initPassport();
     }
 
     private initPassport() {

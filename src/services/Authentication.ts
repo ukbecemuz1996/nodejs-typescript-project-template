@@ -10,7 +10,7 @@ class Authentication {
             : '';
 
         return jwt.sign(payload, secret_key, {
-            expiresIn: '1y',
+            expiresIn: '30d',
         });
     }
 
